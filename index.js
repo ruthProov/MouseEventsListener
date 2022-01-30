@@ -44,16 +44,20 @@ app.post('/saveScreenshot', async function saveScreenshot(req, res) {
             return res.status(500).send(err);
         }
         const data = JSON.stringify({ 'date': req.body.date, 'vendorId': req.body.vendorId, 'imageUrl': `uploads/screenshots/${screenshot.name}` });
-        redis.hmset("Screenshot", vendorId, data);
+        redis.hmset("Screenshot", vendorId, data,(result)=>{
+            console.log(result);
+            res.send({
+                status: true,
+                message: 'File is uploaded',
+                data: {
+                    name: screenshot.name,
+                    mimetype: screenshot.mimetype,
+                    size: screenshot.size
+                }
+            });
+        });
+
     });
 
-    res.send({
-        status: true,
-        message: 'File is uploaded',
-        data: {
-            name: screenshot.name,
-            mimetype: screenshot.mimetype,
-            size: screenshot.size
-        }
-    });
+   
 });

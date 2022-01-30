@@ -31,10 +31,17 @@
         let clicksArr = [];
         const wrapper = document.getElementById('photo');
         wrapper.addEventListener('click', e => {
-            clicksArr.push({ 'type': 'click', pageX: e.pageX, pageY: e.pageY });
+            clicksArr.push({ type: 'click', pageX: e.pageX, pageY: e.pageY });
+        });
+        wrapper.addEventListener('mousemove', e => {
+            clicksArr.push({ type: 'move', pageX: e.pageX, pageY: e.pageY });
         });
         var intervalId = setInterval(function () {
             const response = fetch('http://localhost:5000/mouseEvents', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 method: 'POST',
                 body: JSON.stringify(clicksArr)
             });
@@ -58,7 +65,7 @@
         function takeshot() {
             let div = document.getElementById('photo');
             html2canvas(div).then(
-                function (canvas) {
+                async function (canvas) {
                     document
                         .getElementById('output')
                         .appendChild(canvas);
@@ -73,10 +80,12 @@
                     formData.append("vendorId", vendorId);
                     formData.append("date", date);
 
-                    const response = fetch('http://localhost:5000/saveScreenshot', {
+                    const response = await fetch('http://localhost:5000/saveScreenshot', {
                         method: 'POST',
                         body: formData
                     });
+                    const json = await response.json()
+                    console.log("save succefully " +JSON.stringify(json));
                 });
         }
     </script>
