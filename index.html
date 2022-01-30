@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        screenshut
+    </title>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
+    </script>
+
+    <style>
+        #photo {
+            border: 4px solid green;
+            padding: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="photo">
+
+        <button onclick="takeshot()">
+            Take Screenshot
+        </button>
+    </div>
+    <h1>Screenshot:</h1>
+    <div id="output"></div>
+
+    <script type="text/javascript">
+        let clicksArr = [];
+        const wrapper = document.getElementById('photo');
+        wrapper.addEventListener('click', e => {
+            clicksArr.push({ 'type': 'click', pageX: e.pageX, pageY: e.pageY });
+        });
+        var intervalId = setInterval(function () {
+            const response = fetch('http://localhost:5000/mouseEvents', {
+                method: 'POST',
+                body: JSON.stringify(clicksArr)
+            });
+            clicksArr = [];
+        }, 1000 * 10);
+        function dataURLtoFile(dataurl, filename) {
+
+            var arr = dataurl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+
+            return new File([u8arr], filename, { type: mime });
+        }
+
+        function takeshot() {
+            let div = document.getElementById('photo');
+            html2canvas(div).then(
+                function (canvas) {
+                    document
+                        .getElementById('output')
+                        .appendChild(canvas);
+
+                    const date = Date.now();
+                    const vendorId = "123456789";
+                    var file = dataURLtoFile(canvas.toDataURL(), 'sreenshot_' + vendorId + '_' + date + '.png');
+
+                    let formData = new FormData();
+                    // add vendor id
+                    formData.append("screenshot", file);
+                    formData.append("vendorId", vendorId);
+                    formData.append("date", date);
+
+                    const response = fetch('http://localhost:5000/saveScreenshot', {
+                        method: 'POST',
+                        body: formData
+                    });
+                });
+        }
+    </script>
+</body>
+
+</html>
