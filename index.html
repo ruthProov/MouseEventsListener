@@ -11,7 +11,8 @@
 
     <style>
         #photo,
-        #viewHeatmap {
+        #viewHeatmap,
+        #reset {
             border: 4px solid green;
             padding: 4px;
         }
@@ -20,7 +21,7 @@
             position: relative;
         }
 
-        .point {
+        .clickPoint {
             width: 0px;
             height: 0px;
             border-radius: 50%;
@@ -30,6 +31,17 @@
             position: absolute;
             /* margin-top: 0; */
             left: 0;
+        }
+        .movePoint {
+            width: 0px;
+            height: 0px;
+            border-radius: 50%;
+            border: 1px solid rgb(0, 255, 255);
+            margin: 0px;
+            padding: 0px;
+            position: absolute;
+            /* margin-top: 0; */
+            left: 0; 
         }
     </style>
 </head>
@@ -47,6 +59,9 @@
     </div>
     <h1>Heatmap:</h1>
     <div id="heatmap" style="margin: 30px 0px;"></div>
+    <div id="reset" onClick="reset()">
+        <button>Reset</button>
+    </div>
 
     <script type="text/javascript">
         let clicksArr = [];
@@ -57,9 +72,9 @@
         wrapper.addEventListener('click', e => {
             clicksArr.push({ type: 'click', pageX: e.pageX - divElement.x, pageY: e.pageY - divElement.y });
         });
-        // wrapper.addEventListener('mousemove', e => {
-        //     clicksArr.push({ type: 'move', pageX: e.pageX - divElement.x, pageY: e.pageY - divElement.y });
-        // });
+        wrapper.addEventListener('mousemove', e => {
+            clicksArr.push({ type: 'move', pageX: e.pageX - divElement.x, pageY: e.pageY - divElement.y });
+        });
         const heatmapImg = document.getElementById('heatmap');
         heatmapImg.style.width = divElement.width;
         heatmapImg.style.height = divElement.height;
@@ -94,8 +109,6 @@
         }
 
         function takeshot() {
-
-
             html2canvas(div).then(
                 async function (canvas) {
                     document
@@ -121,21 +134,26 @@
                 });
         }
 
+        async function reset() {
+            await fetch('http://localhost:5000/reset', {
+                method: 'DELETE'
+            });
+            document.getElementById('heatmap').innerHTML ="";
+        }
+
         async function getMouseEvents() {
             const response = await fetch('http://localhost:5000/getMouseEvents');
             const json = await response.json();
             console.log('json', json);
             Object.entries(json).forEach(k => {
-                const clickEvents = JSON.parse(k[1]).filter(event => event.type === 'click')
-                clickEvents.forEach(click => {
-                const btn = document.createElement("button");
-                btn.classList.add('point');
-                btn.style.marginLeft = click.pageX + 'px';
-                btn.style.marginTop = click.pageY + 'px';
-                document.getElementById('heatmap').appendChild(btn);
+                JSON.parse(k[1]).forEach(eve => {
+                    const btn = document.createElement("button");
+                    btn.classList.add(eve.type === 'click'? 'clickPoint' : 'movePoint');
+                    btn.style.marginLeft = eve.pageX + 'px';
+                    btn.style.marginTop = eve.pageY + 'px';
+                    document.getElementById('heatmap').appendChild(btn);
+                });
             });
-            })
-
         }
 
         async function viewHeatmap() {
