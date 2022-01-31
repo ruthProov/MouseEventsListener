@@ -102,6 +102,10 @@
             document.getElementById('heatmap').innerHTML = `<img src=${json.url} />`;
         }
 
+        function getMouseEvents() {
+            const response = await fetch('http://localhost:5000/getMouseEvents');
+        }
+
    </script>
 </body>
 

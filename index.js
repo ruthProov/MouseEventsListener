@@ -24,8 +24,13 @@ app.listen(5000, () => {
     console.log(`Example app listening at http://localhost:5000`);
 });
 
-app.get('/getHeatmap', function routeHandler(req, res) {
+app.get('/getHeatmap', function getHeatmap(req, res) {
     res.send({url: 'http://localhost:5000/uploads/screenshots/sreenshot_123456789_1643614939631.png'});
+});
+
+app.get('/getMouseEvents', async (req, res) => {
+    const data = await redis.hget("Events", "1643612202208");
+    res.send({data: data});
 });
 
 app.get('*', function routeHandler(req, res) {
