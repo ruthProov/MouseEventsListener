@@ -29,7 +29,6 @@
             margin: 0px;
             padding: 0px;
             position: absolute;
-            /* margin-top: 0; */
             left: 0;
         }
         .movePoint {
@@ -40,7 +39,6 @@
             margin: 0px;
             padding: 0px;
             position: absolute;
-            /* margin-top: 0; */
             left: 0; 
         }
     </style>
@@ -95,7 +93,7 @@
 
         function dataURLtoFile(dataurl, filename) {
 
-            var arr = dataurl.split(','),
+            const arr = dataurl.split(','),
                 mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]),
                 n = bstr.length,
@@ -117,7 +115,7 @@
 
                     const date = Date.now();
                     const vendorId = "123456789";
-                    var file = dataURLtoFile(canvas.toDataURL(), 'sreenshot_' + vendorId + '_' + date + '.png');
+                    const file = dataURLtoFile(canvas.toDataURL(), 'sreenshot_' + vendorId + '_' + date + '.png');
 
                     let formData = new FormData();
                     // add vendor id
@@ -144,13 +142,12 @@
         async function getMouseEvents() {
             const response = await fetch('http://localhost:5000/getMouseEvents');
             const json = await response.json();
-            console.log('json', json);
-            Object.entries(json).forEach(k => {
-                JSON.parse(k[1]).forEach(eve => {
+            Object.entries(json).forEach(key => {
+                JSON.parse(key[1]).forEach(event => {
                     const btn = document.createElement("button");
-                    btn.classList.add(eve.type === 'click'? 'clickPoint' : 'movePoint');
-                    btn.style.marginLeft = eve.pageX + 'px';
-                    btn.style.marginTop = eve.pageY + 'px';
+                    btn.classList.add(event.type === 'click'? 'clickPoint' : 'movePoint');
+                    btn.style.marginLeft = event.pageX + 'px';
+                    btn.style.marginTop = event.pageY + 'px';
                     document.getElementById('heatmap').appendChild(btn);
                 });
             });
