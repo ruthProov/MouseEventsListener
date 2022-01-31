@@ -24,13 +24,17 @@ app.listen(5000, () => {
     console.log(`Example app listening at http://localhost:5000`);
 });
 
+app.get('/getHeatmap', function routeHandler(req, res) {
+    res.send({url: 'http://localhost:5000/uploads/screenshots/sreenshot_123456789_1643614939631.png'});
+});
+
 app.get('*', function routeHandler(req, res) {
     res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 app.post('/mouseEvents', function routeHandler(req, res) {
     console.log("I come here", req.body)
-    redis.hmset("Events", Date.now(), req.body, (err, res) => {
+    redis.hmset("Events", Date.now(), JSON.stringify(req.body), (err, res) => {
 
     });
     res.send('success save data in redis');

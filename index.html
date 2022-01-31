@@ -26,6 +26,9 @@
     </div>
     <h1>Screenshot:</h1>
     <div id="output"></div>
+    <button onClick="viewHeatmap()">View heatmap</button>
+    <h1>Heatmap:</h1>
+    <div id="heatmap" style="margin: 30px 0px;"></div>
 
     <script type="text/javascript">
         let clicksArr = [];
@@ -36,7 +39,8 @@
         wrapper.addEventListener('mousemove', e => {
             clicksArr.push({ type: 'move', pageX: e.pageX, pageY: e.pageY });
         });
-        var intervalId = setInterval(function () {
+       
+        setInterval(function () {
             const response = fetch('http://localhost:5000/mouseEvents', {
                 headers: {
                     'Accept': 'application/json',
@@ -47,6 +51,7 @@
             });
             clicksArr = [];
         }, 1000 * 10);
+
         function dataURLtoFile(dataurl, filename) {
 
             var arr = dataurl.split(','),
@@ -88,7 +93,16 @@
                     console.log("save succefully " +JSON.stringify(json));
                 });
         }
-    </script>
+   
+        async function viewHeatmap() {
+            const response = await fetch('http://localhost:5000/getHeatmap', {
+                method: 'GET'
+            });
+            const json = await response.json()
+            document.getElementById('heatmap').innerHTML = `<img src=${json.url} />`;
+        }
+
+   </script>
 </body>
 
 </html>
