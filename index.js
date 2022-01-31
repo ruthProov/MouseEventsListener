@@ -25,12 +25,12 @@ app.listen(5000, () => {
 });
 
 app.get('/getHeatmap', function getHeatmap(req, res) {
-    res.send({url: 'http://localhost:5000/uploads/screenshots/sreenshot_123456789_1643614939631.png'});
+    res.send({ url: 'http://localhost:5000/uploads/screenshots/sreenshot_123456789_1643619959587.png' });
 });
 
 app.get('/getMouseEvents', async (req, res) => {
-    const data = await redis.hget("Events", "1643612202208");
-    res.send({data: data});
+    const data = await redis.hget("Events", "1643619961375");
+    res.send({ data: data });
 });
 
 app.get('*', function routeHandler(req, res) {
@@ -38,11 +38,13 @@ app.get('*', function routeHandler(req, res) {
 });
 
 app.post('/mouseEvents', function routeHandler(req, res) {
-    console.log("I come here", req.body)
-    redis.hmset("Events", Date.now(), JSON.stringify(req.body), (err, res) => {
+    if (req.body.length > 0) {
+        redis.hmset("Events", Date.now(), JSON.stringify(req.body), (err, res) => {
 
-    });
-    res.send('success save data in redis');
+        });
+        res.send('success save data in redis');
+    }
+    res.send("no data");
 });
 
 app.post('/saveScreenshot', async function saveScreenshot(req, res) {
@@ -53,7 +55,7 @@ app.post('/saveScreenshot', async function saveScreenshot(req, res) {
             return res.status(500).send(err);
         }
         const data = JSON.stringify({ 'date': req.body.date, 'vendorId': req.body.vendorId, 'imageUrl': `uploads/screenshots/${screenshot.name}` });
-        redis.hmset("Screenshot", vendorId, data,(result)=>{
+        redis.hmset("Screenshot", vendorId, data, (result) => {
             console.log(result);
             res.send({
                 status: true,
@@ -65,8 +67,6 @@ app.post('/saveScreenshot', async function saveScreenshot(req, res) {
                 }
             });
         });
-
     });
 
-   
 });
