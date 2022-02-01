@@ -13,12 +13,41 @@
         #photo,
         #viewHeatmap,
         #reset {
-            border: 4px solid green;
+            border: 4px solid #42c5b6;
             padding: 4px;
         }
 
         #heatmap {
             position: relative;
+        }
+
+        #screenshotBtn {
+            height: 30px;
+            margin: 10px;
+            border-radius: 10px;
+            width: 200px;
+            background-color: #42c5b6;
+            border: none;
+        }
+
+        #viewHeatmapBtn {
+            height: 30px;
+            margin: 10px;
+            border-radius: 10px;
+            width: 200px;
+            background-color: #145a52;
+            border: none;
+            color: white;
+        }
+
+        #resetBtn {
+            height: 30px;
+            margin: 10px;
+            border-radius: 10px;
+            width: 200px;
+            background-color: #fff;
+            border: 3px solid #145a52;
+            color: #145a52;
         }
 
         .clickPoint {
@@ -31,6 +60,7 @@
             position: absolute;
             left: 0;
         }
+
         .movePoint {
             width: 0px;
             height: 0px;
@@ -39,27 +69,27 @@
             margin: 0px;
             padding: 0px;
             position: absolute;
-            left: 0; 
+            left: 0;
         }
     </style>
 </head>
 
 <body>
     <div id="photo">
-        <button onclick="takeshot()">
-            Take Screenshot
+        <div>Hi,</div>
+        <div>For getting screenshot of the screen please click at the button below.</div>
+        <button id="screenshotBtn" onclick="takeshot()">
+            Click Me
         </button>
     </div>
     <h1>Screenshot:</h1>
     <div id="output"></div>
-    <diV id="viewHeatmap">
-        <button onClick="viewHeatmap()">View heatmap</button>
+    <div style="margin-top:100px;">
+        <button id="viewHeatmapBtn" onClick="viewHeatmap()">View heatmap</button>
+        <button id="resetBtn">Reset</button>
     </div>
     <h1>Heatmap:</h1>
-    <div id="heatmap" style="margin: 30px 0px;"></div>
-    <div id="reset" onClick="reset()">
-        <button>Reset</button>
-    </div>
+    <div id="heatmap" style="margin: 30px 0px; position:absolute;"></div>
 
     <script type="text/javascript">
         let clicksArr = [];
@@ -92,18 +122,16 @@
         }, 1000 * 10);
 
         function dataURLtoFile(dataurl, filename) {
-
-            const arr = dataurl.split(','),
+            let arr = dataurl.split(','),
                 mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]),
                 n = bstr.length,
                 u8arr = new Uint8Array(n);
-
             while (n--) {
                 u8arr[n] = bstr.charCodeAt(n);
             }
-
             return new File([u8arr], filename, { type: mime });
+
         }
 
         function takeshot() {
@@ -136,7 +164,7 @@
             await fetch('http://localhost:5000/reset', {
                 method: 'DELETE'
             });
-            document.getElementById('heatmap').innerHTML ="";
+            document.getElementById('heatmap').innerHTML = "";
         }
 
         async function getMouseEvents() {
@@ -145,7 +173,7 @@
             Object.entries(json).forEach(key => {
                 JSON.parse(key[1]).forEach(event => {
                     const btn = document.createElement("button");
-                    btn.classList.add(event.type === 'click'? 'clickPoint' : 'movePoint');
+                    btn.classList.add(event.type === 'click' ? 'clickPoint' : 'movePoint');
                     btn.style.marginLeft = event.pageX + 'px';
                     btn.style.marginTop = event.pageY + 'px';
                     document.getElementById('heatmap').appendChild(btn);
