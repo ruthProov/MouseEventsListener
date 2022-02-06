@@ -5,6 +5,13 @@ const path = require('path');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+// const jsreport = require('jsreport')({ httpPort: 2000 });
+const fs = require('fs').promises
+
+const jsreport = require('@jsreport/jsreport-core')()
+// jsreport.use(require('@jsreport/jsreport-chrome-pdf')())
+// jsreport.use(require('@jsreport/jsreport-handlebars')())
+let jsReportInitialized = false;
 
 const redis = new Redis();
 redis.on('ready', () => {
@@ -33,8 +40,50 @@ app.get('/getMouseEvents', async (req, res) => {
     res.send(data);
 });
 
+function checkIfJsReportIsInit() {
+
+    if (!jsReportInitialized) {
+        jsReportInitialized = true;
+        return jsreport.init();
+    }
+    return Promise.resolve();
+}
+
 app.get('*', function routeHandler(req, res) {
     res.sendFile(path.join(__dirname, '/index.html'));
+});
+
+app.get('/pdfFile', async (req, res) => {
+    // return checkIfJsReportIsInit().then(() => {
+    //     jsreport.render({
+    //         template: {
+    //             content: '<h1>Hello all</h1>',
+    //             engine: 'handlebars',
+    //             recipe: 'chrome-pdf',
+    //             chrome: {
+    //                 format: 'A4',
+    //                 printBackground: true,
+    //                 marginTop: '1in',
+    //                 marginRight: '0.5in',
+    //                 marginBottom: '0.25in',
+    //                 marginLeft: '0.5in'
+    //             }
+    //         }
+    //     }).then(async resp => {
+    //         console.log(resp.content)
+    //         const file = await fs.writeFile('out.pdf', resp.content);
+    //         file.mv('./uploads/pdfFiles/' + "file1", err => {
+    //             if (err) {
+    //                 return res.status(500).send(err);
+    //             }
+    //         });
+    //         res.setHeader('Content-Type', 'application/pdf');
+    //         res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
+    //         res.send(file);
+    //     });
+    // }).catch(err => {
+    //     console.error(err);
+    // });
 });
 
 app.post('/mouseEvents', function routeHandler(req, res) {
@@ -74,5 +123,5 @@ app.post('/saveScreenshot', async function saveScreenshot(req, res) {
 app.delete('/reset', async (req, res) => {
     console.log("delete");
     await redis.del("Events");
-    res.send({status:200})
+    res.send({ status: 200 })
 });
