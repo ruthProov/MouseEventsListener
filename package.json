@@ -9,13 +9,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jsreport/jsreport-chrome-pdf": "^3.1.0",
+    "@jsreport/jsreport-core": "^3.4.1",
+    "@jsreport/jsreport-handlebars": "^3.0.0",
+    "@jsreport/nodejs-client": "^3.0.0",
+    "axios": "^0.25.0",
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "express-fileupload": "^1.2.1",
     "html2canvas": "^1.4.1",
     "ioredis": "^4.28.3",
+    "jsreport": "^3.3.0",
+    "jsreport-assets": "^1.7.2",
     "pm2": "^5.1.2",
-    "redis": "^4.0.2"
+    "redis": "^4.0.2",
+    "request-promise": "^4.2.6"
   }
 }

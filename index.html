@@ -86,7 +86,8 @@
     <div id="output"></div>
     <div style="margin-top:100px;">
         <button id="viewHeatmapBtn" onClick="viewHeatmap()">View heatmap</button>
-        <button id="resetBtn">Reset</button>
+        <button id="resetBtn" onClick="reset()">Reset</button>
+        <button id="pdfFile" onClick="pdfFile()">PDF file</button>
     </div>
     <h1>Heatmap:</h1>
     <div id="heatmap" style="margin: 30px 0px; position:absolute;"></div>
@@ -165,6 +166,14 @@
                 method: 'DELETE'
             });
             document.getElementById('heatmap').innerHTML = "";
+        }
+
+        async function pdfFile() {
+            const response = await fetch('http://localhost:5000/pdfFile', {
+                method: 'GET'
+            });
+            const file = await response.json();
+            console.log("I here ", file.body)
         }
 
         async function getMouseEvents() {
